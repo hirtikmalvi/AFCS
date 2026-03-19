@@ -14,9 +14,11 @@ builder.Services.AddSwaggerGen();
 
 // Repositories
 builder.Services.AddScoped<IStationRepository, StationRepository>();
+builder.Services.AddScoped<IGateRepository, GateRepository>();
 
 // Services
 builder.Services.AddScoped<IStationService, StationService>();
+builder.Services.AddScoped<IGateService, GateService>();
 
 var app = builder.Build();
 
