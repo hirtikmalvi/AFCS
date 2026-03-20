@@ -1,3 +1,4 @@
+using AFCS.API.Hubs;
 using AFCS.API.Repositories.Implementations;
 using AFCS.API.Repositories.Interfaces;
 using AFCS.API.Services.Implementations;
@@ -12,6 +13,7 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddSignalR();
 
 builder.Services.AddCors(options =>
 {
@@ -48,10 +50,14 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseCors("AllowAngular");
+
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapHub<FareHub>("/hubs/fare");
 
 app.Run();

@@ -1,16 +1,21 @@
 ﻿using AFCS.API.Common;
 using AFCS.API.DTOs.Gate;
+using AFCS.API.Hubs;
 using AFCS.API.Repositories.Interfaces;
 using AFCS.API.Services.Interfaces;
+using Microsoft.AspNetCore.SignalR;
 
 namespace AFCS.API.Services.Implementations
 {
     public class GateService: IGateService
     {
         private readonly IGateRepository gateRepository;
-        public GateService(IGateRepository _gateRepository)
+        private readonly IHubContext<FareHub> hub;
+
+        public GateService(IGateRepository _gateRepository, IHubContext<FareHub> _hub)
         {
             gateRepository = _gateRepository;
+            hub = _hub;
         }
 
         public async Task<Result<List<GateDTO>>> GetAllGates()
@@ -40,6 +45,9 @@ namespace AFCS.API.Services.Implementations
                 GateNumber = gate.GateNumber,
                 Status = status,
             };
+
+            // Broadcast gate change to all dashboards
+            await hub.Clients.All.SendAsync(FareHub.GateStatusChanged, gateDTO);
 
             return Result<GateDTO>.Ok(gateDTO);
         }
