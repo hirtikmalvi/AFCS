@@ -15,10 +15,12 @@ builder.Services.AddSwaggerGen();
 // Repositories
 builder.Services.AddScoped<IStationRepository, StationRepository>();
 builder.Services.AddScoped<IGateRepository, GateRepository>();
+builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
 
 // Services
 builder.Services.AddScoped<IStationService, StationService>();
 builder.Services.AddScoped<IGateService, GateService>();
+builder.Services.AddScoped<ITransactionService, TransactionService>();
 
 var app = builder.Build();
 
