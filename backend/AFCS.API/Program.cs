@@ -19,11 +19,13 @@ builder.Services.Configure<ApiBehaviorOptions>(options => options.SuppressModelS
 builder.Services.AddScoped<IStationRepository, StationRepository>();
 builder.Services.AddScoped<IGateRepository, GateRepository>();
 builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
+builder.Services.AddScoped<IStatsRepository, StatsRepository>();
 
 // Services
 builder.Services.AddScoped<IStationService, StationService>();
 builder.Services.AddScoped<IGateService, GateService>();
 builder.Services.AddScoped<ITransactionService, TransactionService>();
+builder.Services.AddScoped<IStatsService, StatsService>();
 
 var app = builder.Build();
 
