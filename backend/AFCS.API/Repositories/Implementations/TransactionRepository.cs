@@ -38,6 +38,37 @@ namespace AFCS.API.Repositories.Implementations
             return transactions;
         }
 
+        public async Task<TransactionDTO> CreateTransaction(CreateTransactionRequestDTO request)
+        {
+            await using var conn = new NpgsqlConnection(dbConnString);
+            await conn.OpenAsync();
+
+            var sql = "SELECT * FROM create_transaction(@p_gate_id, @p_card_number, @p_fare_amount, @p_payment_type)";
+
+            await using var cmd = new NpgsqlCommand(sql, conn);
+
+            cmd.Parameters.AddWithValue("@p_gate_id", (object)request.GateId!);
+            cmd.Parameters.AddWithValue("@p_card_number", request.CardNumber!);
+            cmd.Parameters.AddWithValue("@p_fare_amount", request.FareAmount!);
+            cmd.Parameters.AddWithValue("@p_payment_type", request.PaymentType!);
+
+            await using var reader = await cmd.ExecuteReaderAsync();
+
+            await reader.ReadAsync();
+
+            var transaction = new TransactionDTO
+            {
+                Id = reader.GetInt32(reader.GetOrdinal("new_id")),
+                TransactionTime = reader.GetDateTime(reader.GetOrdinal("new_transaction_time")),
+                GateId = (int)request.GateId!,
+                CardNumber = string.Concat(request.CardNumber!.Substring(0, 4), "****"),
+                FareAmount = (decimal)request.FareAmount!,
+                PaymentType = request
+                .PaymentType!
+            };
+            return transaction;
+        }
+
         private static TransactionDTO getTransactionDTO(NpgsqlDataReader r)
         {
             var transaction = new TransactionDTO

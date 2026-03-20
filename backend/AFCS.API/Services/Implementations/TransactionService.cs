@@ -20,5 +20,12 @@ namespace AFCS.API.Services.Implementations
             
             return Result<List<TransactionDTO>>.Ok(transactions);
         }
+
+        public async Task<Result<TransactionDTO>> CreateTransaction(CreateTransactionRequestDTO request)
+        {
+            var transaction = await transactionRepository.CreateTransaction(request);
+
+            return Result<TransactionDTO>.Ok(transaction);
+        }
     }
 }

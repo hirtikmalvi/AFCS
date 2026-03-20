@@ -1,4 +1,6 @@
-﻿using AFCS.API.Services.Interfaces;
+﻿using AFCS.API.Common;
+using AFCS.API.DTOs.Transaction;
+using AFCS.API.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -27,6 +29,20 @@ namespace AFCS.API.Controllers
             }
 
             var result = await transactionService.GetRecentTransactions(limit);
+            return Ok(result);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateTransaction([FromBody] CreateTransactionRequestDTO request)
+        {
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.Where(ms => ms.Value.Errors.Count > 0).SelectMany(kvp => kvp.Value.Errors).Select(e => e.ErrorMessage).ToList();
+
+                return Ok(Result<TransactionDTO>.BadRequest(errors));
+            }
+
+            var result = await transactionService.CreateTransaction(request);
             return Ok(result);
         }
     }
