@@ -32,6 +32,44 @@ namespace AFCS.API.Repositories.Implementations
             return gates;
         }
 
+        public async Task<GateDTO> GetGateById(int gateId)
+        {
+            await using var conn = new NpgsqlConnection(dbConnString);
+            await conn.OpenAsync();
+
+            var sql = "SELECT * FROM get_gate_by_id_with_station_name(@p_id)";
+
+            await using var cmd = new NpgsqlCommand(sql, conn);
+
+            cmd.Parameters.AddWithValue("@p_id", gateId);
+
+            await using var reader = await cmd.ExecuteReaderAsync();
+
+            if (await reader.ReadAsync())
+            {
+                return getGateDTO(reader);
+            }
+            return null!;
+        }
+
+        public async Task<bool> UpdateStatus(int gateId, string status)
+        {
+            await using var conn = new NpgsqlConnection(dbConnString);
+
+            await conn.OpenAsync();
+
+            var sql = "UPDATE gates SET status = @status WHERE id = @id";
+
+            await using var cmd = new NpgsqlCommand(sql, conn);
+
+            cmd.Parameters.AddWithValue("@status", status);
+            cmd.Parameters.AddWithValue("@id", gateId);
+
+            var reader = await cmd.ExecuteNonQueryAsync();
+
+            return reader > 0;
+        }
+
         private GateDTO getGateDTO(NpgsqlDataReader r)
         {
             var gate = new GateDTO
