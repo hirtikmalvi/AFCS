@@ -10,7 +10,7 @@ import { StatsDTO } from '../models/stats.model';
   providedIn: 'root',
 })
 export class ApiService {
-  private BASE_URL = 'https://localhost:7118/api';
+  private BASE_URL = 'http://localhost:5019/api';
 
   private http = inject(HttpClient);
 
@@ -21,13 +21,13 @@ export class ApiService {
   }
   getGates(): Observable<GateDTO[]> {
     return this.http
-      .get<Result<GateDTO[]>>(`${this.BASE_URL}/api/gate`)
+      .get<Result<GateDTO[]>>(`${this.BASE_URL}/gate`)
       .pipe(map((r) => r.data));
   }
 
   getStats(): Observable<StatsDTO> {
     return this.http
-      .get<Result<StatsDTO>>(`${this.BASE_URL}/api/stats/summary`)
+      .get<Result<StatsDTO>>(`${this.BASE_URL}/stats/summary`)
       .pipe(map((r) => r.data));
   }
 }

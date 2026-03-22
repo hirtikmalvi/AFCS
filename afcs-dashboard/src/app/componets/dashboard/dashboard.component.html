@@ -1,1 +1,102 @@
-<p>dashboard works!</p>
+<div class="dashboard">
+  <!-- Header -->
+  <div class="dash-header">
+    <h1>AFCS Live Dashboard</h1>
+    <span class="conn-badge" [class.connected]="connected">
+      {{ connected ? "Live" : "Connecting..." }}
+    </span>
+  </div>
+
+  <!-- Stat Cards -->
+  <div class="stat-grid" *ngIf="stats">
+    <div class="stat-card">
+      <div class="stat-label">Total Transactions</div>
+      <div class="stat-value">{{ stats.totalTransactions }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Total Revenue</div>
+      <div class="stat-value">₹{{ stats.totalRevenue }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Average Fare</div>
+      <div class="stat-value">₹{{ stats.averageFare }}</div>
+    </div>
+    <div class="stat-card gate-stat open">
+      <div class="stat-label">Open Gates</div>
+      <div class="stat-value">{{ stats.activeGates }}</div>
+    </div>
+    <div class="stat-card gate-stat closed">
+      <div class="stat-label">Closed Gates</div>
+      <div class="stat-value">{{ stats.closedGates }}</div>
+    </div>
+    <div class="stat-card gate-stat fault">
+      <div class="stat-label">Fault Gates</div>
+      <div class="stat-value">{{ stats.faultGates }}</div>
+    </div>
+  </div>
+
+  <!-- Gate Status Grid -->
+  <div class="section-title">Gate Status</div>
+  <div class="gate-grid">
+    <div
+      *ngFor="let gate of gates"
+      class="gate-card"
+      [ngClass]="gateClass(gate.status)"
+    >
+      <div class="gate-name">{{ gate.gateNumber }}</div>
+      <div class="gate-station">{{ gate.stationName }}</div>
+      <div class="gate-status">{{ gate.status | uppercase }}</div>
+    </div>
+  </div>
+
+  <!-- Charts Row -->
+  <div class="charts-row">
+    <div class="chart-card">
+      <div class="section-title">Hourly Revenue</div>
+      <canvas #barCanvas></canvas>
+    </div>
+    <div class="chart-card">
+      <div class="section-title">Payment Types</div>
+      <canvas #donutCanvas></canvas>
+    </div>
+  </div>
+
+  <!-- Live Transaction Feed -->
+  <div class="section-title">
+    Live Transactions
+    <span class="live-dot"></span>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Time</th>
+          <th>Station</th>
+          <th>Gate</th>
+          <th>Card</th>
+          <th>Amount</th>
+          <th>Payment</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let t of transactions">
+          <td>{{ t.transactionTime | date: "HH:mm:ss" }}</td>
+          <td>{{ t.stationName }}</td>
+          <td>{{ t.gateNumber }}</td>
+          <td>{{ t.cardNumber }}</td>
+          <td>₹{{ t.fareAmount }}</td>
+          <td>
+            <span class="pay-badge" [ngClass]="t.paymentType">
+              {{ t.paymentType | uppercase }}
+            </span>
+          </td>
+        </tr>
+        <tr *ngIf="transactions.length === 0">
+          <td colspan="6" class="empty">
+            No transactions yet — post one in Swagger
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

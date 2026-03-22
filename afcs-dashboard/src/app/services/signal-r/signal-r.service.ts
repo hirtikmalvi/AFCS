@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable, NgZone } from '@angular/core';
 import * as signalR from '@microsoft/signalr';
 import { Subject } from 'rxjs';
 import { TransactionDTO } from '../../models/transaction.model';
@@ -12,19 +12,21 @@ export class SignalRService {
   newTransaction$ = new Subject<TransactionDTO>();
   gateChanged$ = new Subject<GateDTO>();
 
+  private zone = inject(NgZone);
+
   private connection = new signalR.HubConnectionBuilder()
-    .withUrl('https://localhost:7118/hubs/fare')
+    .withUrl('http://localhost:5019/hubs/fare')
     .withAutomaticReconnect()
     .build();
 
   async start() {
     // Listen BEFORE starting connection
     this.connection.on('NewTransaction', (data: TransactionDTO) =>
-      this.newTransaction$.next(data),
+      this.zone.run(() => this.newTransaction$.next(data)),
     );
 
     this.connection.on('GateStatusChanged', (data: GateDTO) =>
-      this.gateChanged$.next(data),
+      this.zone.run(() => this.gateChanged$.next(data)),
     );
 
     try {
