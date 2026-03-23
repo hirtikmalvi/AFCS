@@ -43,6 +43,7 @@
       class="gate-card"
       [ngClass]="gateClass(gate.status)"
     >
+      <div class="gate-id">{{ gate.id }}</div>
       <div class="gate-name">{{ gate.gateNumber }}</div>
       <div class="gate-station">{{ gate.stationName }}</div>
       <div class="gate-status">{{ gate.status | uppercase }}</div>
@@ -70,20 +71,22 @@
     <table>
       <thead>
         <tr>
+          <th>Sr. No.</th>
           <th>Time</th>
           <th>Station</th>
-          <th>Gate</th>
-          <th>Card</th>
+          <th>Gate Name</th>
+          <th>Card Number</th>
           <th>Amount</th>
           <th>Payment</th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let t of transactions">
-          <td>{{ t.transactionTime | date: "HH:mm:ss" }}</td>
+        <tr *ngFor="let t of transactions; let i = index">
+          <td>{{ i + 1 }}</td>
+          <td>{{ t.transactionTime | date: "dd/MM/yyyy HH:mm:ss a" }}</td>
           <td>{{ t.stationName }}</td>
           <td>{{ t.gateNumber }}</td>
-          <td>{{ t.cardNumber }}</td>
+          <td>{{ t.cardNumber | hidecardnumber }}</td>
           <td>₹{{ t.fareAmount }}</td>
           <td>
             <span class="pay-badge" [ngClass]="t.paymentType">

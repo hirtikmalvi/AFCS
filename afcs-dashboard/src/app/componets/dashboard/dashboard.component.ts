@@ -15,12 +15,13 @@ import { TransactionDTO } from '../../models/transaction.model';
 import { Subscription } from 'rxjs';
 import { ApiService } from '../../services/api.service';
 import { SignalRService } from '../../services/signal-r/signal-r.service';
+import { HideCardNumberPipe } from '../../pipes/hide-card-number.pipe';
 
 Chart.register(...registerables);
 
 @Component({
   selector: 'app-dashboard',
-  imports: [CommonModule],
+  imports: [CommonModule, HideCardNumberPipe],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
 })
@@ -80,20 +81,17 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // SignalR Handlers
   onNewTransaction(t: TransactionDTO) {
-
     // Prepend to transaction feed (keep max 50)
-    this.transactions = [t, ...this.transactions].slice(0, 50);
+    this.transactions = [t, ...this.transactions].slice(0, 20);
+
+    this.api.getStats().subscribe((s) => {
+      if (s) {
+        this.stats = s;
+      }
+    });
 
     // Update stat cards
     if (this.stats) {
-      this.stats.totalTransactions++;
-      this.stats.totalRevenue = +(
-        this.stats.totalRevenue + t.fareAmount
-      ).toFixed(2);
-      this.stats.averageFare = +(
-        this.stats.totalRevenue / this.stats.totalTransactions
-      ).toFixed(2);
-
       // Update hourly bar chart
       const hour = new Date(t.transactionTime).getHours();
       const existing = this.stats.hourlyRevenue.find((h) => h.hour === hour);
