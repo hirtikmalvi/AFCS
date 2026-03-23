@@ -61,10 +61,12 @@ namespace AFCS.API.Repositories.Implementations
                 Id = reader.GetInt32(reader.GetOrdinal("new_id")),
                 TransactionTime = reader.GetDateTime(reader.GetOrdinal("new_transaction_time")),
                 GateId = (int)request.GateId!,
-                CardNumber = string.Concat(request.CardNumber!.Substring(0, 4), "****"),
+                CardNumber = string.Concat("******" , request.CardNumber!.Substring(request.CardNumber.Length - 4)),
                 FareAmount = (decimal)request.FareAmount!,
                 PaymentType = request
-                .PaymentType!
+                .PaymentType!,
+                StationName = reader.GetString(reader.GetOrdinal("station_name")),
+                GateNumber = reader.GetString(reader.GetOrdinal("gate_name"))
             };
             return transaction;
         }
